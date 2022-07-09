@@ -1,0 +1,186 @@
+{
+  "_version": "1.29.0",
+  "sap.platform.cf": {
+    "ui5VersionNumber": "1.96.x"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "cap.websockets"
+  },
+  "sap.app": {
+    "id": "cap.websockets.test",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap-ux/fiori-elements-writer:worklist",
+      "version": "0.3.6",
+      "toolsId": "00aedc0f-c1ab-42c3-a5d6-57d72b5cd44d"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "usage/",
+        "type": "OData",
+        "settings": {
+          "annotations": ["annotation"],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      },
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.102.3",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ushell": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "cap.websockets.test.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "workitemsList",
+          "target": "workitemsList"
+        },
+        {
+          "pattern": "workitems({key}):?query:",
+          "name": "workitemsObjectPage",
+          "target": "workitemsObjectPage"
+        },
+        {
+          "pattern": "workitems({key})/matches({key2}):?query:",
+          "name": "matchesObjectPage",
+          "target": "matchesObjectPage"
+        }
+      ],
+      "targets": {
+        "workitemsList": {
+          "type": "Component",
+          "id": "workitemsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "workitems",
+              "variantManagement": "Page",
+              "hideFilterBar": true,
+              "navigation": {
+                "workitems": {
+                  "detail": {
+                    "route": "workitemsObjectPage"
+                  }
+                }
+              },
+              "initialLoad": "Enabled"
+            }
+          }
+        },
+        "workitemsObjectPage": {
+          "type": "Component",
+          "id": "workitemsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "entitySet": "workitems",
+              "navigation": {
+                "matches": {
+                  "detail": {
+                    "route": "matchesObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "matches/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "enableExport": true,
+                    "type": "GridTable",
+                    "quickVariantSelection": {
+                      "showCounts": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "matchesObjectPage": {
+          "type": "Component",
+          "id": "matchesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "entitySet": "matches"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}
