@@ -1,0 +1,131 @@
+_schema-version: "3.1"
+ID: cap-websockets
+description: Uniserv I4H mockup
+version: 1.0.0
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx -p @sap/cds-dk cds build --production
+
+modules:
+  - name: cap-websockets-srv
+    type: nodejs
+    path: gen/srv/
+    requires:
+      - name: cap-websockets-uaa
+    provides:
+      - name: srv_api
+        properties:
+          url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+      disk-quota: 1024M
+      memory: 256M
+    build-parameters:
+      builder: npm-ci
+      ignore:
+        - node_modules/
+        - mta_archives/
+  - name: cap-websockets-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: cap-websockets-html-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - capwebsocketstest.zip
+          name: capwebsocketstest
+          target-path: resources/
+  - name: capwebsocketstest
+    type: html5
+    path: app/test
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm ci
+        - npm run build:cf
+      supported-platforms: []
+  - name: cap-websockets-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: cap-websockets-uaa
+        parameters:
+          service-key:
+            name: cap-websockets-uaa-key
+      - name: cap-websockets-html-repo-host
+        parameters:
+          service-key:
+            name: cap-websockets-html-repo-host-key
+      - name: cap-websockets-destination-service
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        subaccount:
+          destinations:
+            - Name: cap-websockets-html-repo-host
+              ServiceInstanceName: cap-websockets-html-repo-host
+              ServiceKeyName: cap-websockets-html-repo-host-key
+              sap.cloud.service: cap.websockets
+            - Authentication: OAuth2UserTokenExchange
+              Name: cap-websockets-uaa
+              ServiceInstanceName: cap-websockets-uaa
+              ServiceKeyName: cap-websockets-uaa-key
+              sap.cloud.service: cap.websockets
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+resources:
+  - name: cap-websockets-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        tenant-mode: dedicated
+        xsappname: cap-websockets-${org}-${space}
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+  - name: cap-websockets-html-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+  - name: cap-websockets-destination-service
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv_api
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: false
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+          subaccount:
+            existing_destinations_policy: update
+            destinations:
+              - Name: cap-websockets
+                Description: CAP backend service
+                Authentication: NoAuthentication
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv_api/url}
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                timeout: 600000
