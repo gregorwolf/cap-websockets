@@ -1,3 +1,4 @@
+@(requires : 'authenticated-user')
 service UsageService {
 
   @odata.singleton

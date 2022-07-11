@@ -1,8 +1,8 @@
 {
   "name": "cap-websockets",
   "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "CAP WebSockets Demo",
+  "description": "CAP WebSockets Demo",
+  "repository": "",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
@@ -10,7 +10,6 @@
     "@sap/xssec": "^3",
     "cron": "^2.0.0",
     "express": "^4",
-    "hdb": "^0.19.3",
     "node-os-utils": "^1.3.7",
     "passport": "^0",
     "ws": "^8.8.0"
@@ -20,6 +19,21 @@
   },
   "scripts": {
     "start": "cds run"
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "basic-auth"
+      },
+      "[production]": {
+        "auth": {
+          "kind": "xsuaa"
+        }
+      },
+      "uaa": {
+        "kind": "xsuaa"
+      }
+    }
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

@@ -1,0 +1,17 @@
+{
+  "name": "bookshop-demo-app",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "@sap/approuter": "^11.2.1"
+  },
+  "devDependencies": {
+    "@sap/html5-repo-mock": "^2.1.0"
+  },
+  "engines": {
+    "node": "^14"
+  },
+  "scripts": {
+    "start-local": "export destinations=`cat default-env.json | jq .destinations` && export VCAP_SERVICES=`cat default-env.json | jq .VCAP_SERVICES` && node node_modules/@sap/html5-repo-mock/index.js"
+  }
+}

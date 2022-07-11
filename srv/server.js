@@ -1,7 +1,27 @@
 /* eslint-disable no-console */
 const cds = require("@sap/cds");
+const { parse } = require("url");
 const { WebSocketServer } = require("ws");
 var CronJob = require("cron").CronJob;
+const passport = require("passport");
+const xsenv = require("@sap/xsenv");
+
+if (
+  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "hybrid"
+) {
+  try {
+    xsenv.loadEnv();
+    const JWTStrategy = require("@sap/xssec").JWTStrategy;
+    const services = xsenv.getServices({ xsuaa: { tags: "xsuaa" } });
+    xsuaaCredentials = services.xsuaa;
+    const jwtStrategy = new JWTStrategy(xsuaaCredentials);
+    passport.use(jwtStrategy);
+  } catch (error) {
+    console.warn(error.message);
+  }
+}
+
 var osu = require("node-os-utils");
 var cpu = osu.cpu;
 
@@ -20,14 +40,31 @@ var job = new CronJob(
 const wss = new WebSocketServer({ noServer: true });
 
 // react on bootstrapping events...
+cds.on("bootstrap", async (app) => {
+  console.log("--> bootstrap");
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.NODE_ENV === "hybrid"
+  ) {
+    app.use(jwtLogger);
+    await app.use(passport.initialize());
+    await app.use(passport.authenticate("JWT", { session: false }));
+  }
+});
+
 cds.on("listening", ({ server }) => {
   console.log("--> listening");
 
   server.on("upgrade", (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      console.log("WSS HandleUpgrade");
-      wss.emit("connection", ws, request);
-    });
+    const { pathname } = parse(request.url);
+    if (pathname === "/ws") {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        console.log("WSS HandleUpgrade");
+        wss.emit("connection", ws, request);
+      });
+    } else {
+      socket.destroy();
+    }
   });
 
   global.wss = wss;
