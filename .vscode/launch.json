@@ -5,11 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "cds run --with-mocks --in-memory?",
+      "command": "cds run --with-mocks --in-memory",
       "name": "cds run",
       "request": "launch",
       "type": "node-terminal",
-      "skipFiles": [ "<node_internals>/**" ]
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "command": "cds watch --profile hybrid",
+      "name": "cds run - hybrid",
+      "request": "launch",
+      "type": "node-terminal",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

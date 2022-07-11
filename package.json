@@ -8,6 +8,7 @@
   "dependencies": {
     "@sap/cds": "^6",
     "@sap/xssec": "^3",
+    "@sap/xsenv": "^3",
     "cron": "^2.0.0",
     "express": "^4",
     "node-os-utils": "^1.3.7",
@@ -18,7 +19,8 @@
     "sqlite3": "^5.0.8"
   },
   "scripts": {
-    "start": "cds run"
+    "start": "cds run",
+    "bind:uaa": "cds bind uaa --to cap-websockets-uaa"
   },
   "cds": {
     "requires": {

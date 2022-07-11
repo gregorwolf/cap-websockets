@@ -6,17 +6,16 @@ var CronJob = require("cron").CronJob;
 const passport = require("passport");
 const xsenv = require("@sap/xsenv");
 
-if (
-  process.env.NODE_ENV === "production" ||
-  process.env.NODE_ENV === "hybrid"
-) {
+if (process.env.NODE_ENV === "production" || cds.env.env === "hybrid") {
   try {
+    console.info("Setup @sap/xssec JWTStrategy");
     xsenv.loadEnv();
     const JWTStrategy = require("@sap/xssec").JWTStrategy;
     const services = xsenv.getServices({ xsuaa: { tags: "xsuaa" } });
     xsuaaCredentials = services.xsuaa;
     const jwtStrategy = new JWTStrategy(xsuaaCredentials);
     passport.use(jwtStrategy);
+    global.JWTStrategy = JWTStrategy;
   } catch (error) {
     console.warn(error.message);
   }
@@ -58,9 +57,16 @@ cds.on("listening", ({ server }) => {
   server.on("upgrade", (request, socket, head) => {
     const { pathname } = parse(request.url);
     if (pathname === "/ws") {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        console.log("WSS HandleUpgrade");
-        wss.emit("connection", ws, request);
+      authenticate(request, function next(err, client) {
+        if (err || !client) {
+          socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+          socket.destroy();
+          return;
+        }
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          console.log("WSS HandleUpgrade");
+          wss.emit("connection", ws, request);
+        });
       });
     } else {
       socket.destroy();
@@ -89,4 +95,10 @@ function sendMessageToConnectedClients(messageContent) {
   for (const client of global.wss.clients) {
     client.send(JSON.stringify(messageContent));
   }
+}
+
+function authenticate(request, next) {
+  const auth = global.JWTStrategy(request, {});
+  console.log(request.headers);
+  next(true);
 }
