@@ -12,6 +12,6 @@
     "node": "^14"
   },
   "scripts": {
-    "start-local": "export destinations=`cat default-env.json | jq .destinations` && export VCAP_SERVICES=`cat default-env.json | jq .VCAP_SERVICES` && node node_modules/@sap/html5-repo-mock/index.js"
+    "start-local": "export MOCK_DIR=../app && export destinations=`cat default-env.json | jq .destinations` && export VCAP_SERVICES=`cat default-env.json | jq .VCAP_SERVICES` && node node_modules/@sap/html5-repo-mock/index.js --flp"
   }
 }

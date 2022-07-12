@@ -17,7 +17,8 @@ function createWebSocketConnection() {
     wsUrl =
       "wss://" + document.location.host + document.location.pathname + "/ws";
   } else {
-    wsUrl = "ws://" + document.location.host + "/ws";
+    wsUrl =
+      "ws://" + document.location.host + document.location.pathname + "/ws";
   }
 
   let ws = new WebSocket(wsUrl);

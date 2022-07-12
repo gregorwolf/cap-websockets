@@ -3,7 +3,6 @@ const cds = require("@sap/cds");
 const { parse } = require("url");
 const { WebSocketServer } = require("ws");
 var CronJob = require("cron").CronJob;
-const passport = require("passport");
 const xsenv = require("@sap/xsenv");
 
 if (process.env.NODE_ENV === "production" || cds.env.env === "hybrid") {
@@ -14,8 +13,7 @@ if (process.env.NODE_ENV === "production" || cds.env.env === "hybrid") {
     const services = xsenv.getServices({ xsuaa: { tags: "xsuaa" } });
     xsuaaCredentials = services.xsuaa;
     const jwtStrategy = new JWTStrategy(xsuaaCredentials);
-    passport.use(jwtStrategy);
-    global.JWTStrategy = JWTStrategy;
+    global.jwtStrategy = jwtStrategy;
   } catch (error) {
     console.warn(error.message);
   }
@@ -41,14 +39,6 @@ const wss = new WebSocketServer({ noServer: true });
 // react on bootstrapping events...
 cds.on("bootstrap", async (app) => {
   console.log("--> bootstrap");
-  if (
-    process.env.NODE_ENV === "production" ||
-    process.env.NODE_ENV === "hybrid"
-  ) {
-    app.use(jwtLogger);
-    await app.use(passport.initialize());
-    await app.use(passport.authenticate("JWT", { session: false }));
-  }
 });
 
 cds.on("listening", ({ server }) => {
@@ -56,9 +46,9 @@ cds.on("listening", ({ server }) => {
 
   server.on("upgrade", (request, socket, head) => {
     const { pathname } = parse(request.url);
-    if (pathname === "/ws") {
+    if (pathname === "/ws" || pathname === "/index.html/ws") {
       authenticate(request, function next(err, client) {
-        if (err || !client) {
+        if (err) {
           socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
           socket.destroy();
           return;
@@ -69,6 +59,7 @@ cds.on("listening", ({ server }) => {
         });
       });
     } else {
+      console.warn(`Pathname ${pathname} not allowed for WebSocket connection`);
       socket.destroy();
     }
   });
@@ -98,7 +89,12 @@ function sendMessageToConnectedClients(messageContent) {
 }
 
 function authenticate(request, next) {
-  const auth = global.JWTStrategy(request, {});
-  console.log(request.headers);
-  next(true);
+  console.log("authenticate WebSocket request");
+  try {
+    const auth = global.jwtStrategy.authenticate(request, {});
+    return next(false);
+  } catch (error) {
+    console.log("authentication failed");
+    return next(true);
+  }
 }
