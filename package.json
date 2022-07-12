@@ -5,6 +5,9 @@
   "repository": "",
   "license": "UNLICENSED",
   "private": true,
+  "engines": {
+    "node": "^14"
+  },
   "dependencies": {
     "@sap/cds": "^6.0.2",
     "@sap/xssec": "^3.2.13",
