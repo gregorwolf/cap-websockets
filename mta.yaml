@@ -40,13 +40,27 @@ modules:
     build-parameters:
       build-result: resources
       requires:
-        - artifacts:
+        - name: capwebsocketstest
+          artifacts:
             - capwebsocketstest.zip
-          name: capwebsocketstest
+          target-path: resources/
+        - name: capwebsocketsshellplugin
+          artifacts:
+            - capwebsocketsshellplugin.zip
           target-path: resources/
   - name: capwebsocketstest
     type: html5
     path: app/test
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm ci
+        - npm run build:cf
+      supported-platforms: []
+  - name: capwebsocketsshellplugin
+    type: html5
+    path: app/shellplugin
     build-parameters:
       build-result: dist
       builder: custom
