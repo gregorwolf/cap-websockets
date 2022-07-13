@@ -91,6 +91,8 @@ function sendMessageToConnectedClients(messageContent) {
 function authenticate(request, next) {
   console.log("authenticate WebSocket request");
   try {
+    // TODO: Replace with @sap/xssec - Direct Usage with existing Access Token
+    // https://github.com/gregorwolf/SAP-NPM-API-collection/tree/main/apis/xssec#direct-usage-with-existing-access-token
     const auth = global.jwtStrategy.authenticate(request, {});
     return next(false);
   } catch (error) {
