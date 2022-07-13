@@ -1,5 +1,5 @@
 {
-  "name": "cockpit",
+  "name": "test-websocket",
   "version": "0.0.1",
   "description": "Test WebSocket connection",
   "keywords": [
