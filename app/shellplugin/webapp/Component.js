@@ -54,7 +54,9 @@ sap.ui.define(
             );
             var sServiceUrl = this.getModel().sServiceUrl;
             sServiceUrl = sServiceUrl.replace("../../../../../..", "");
+            sServiceUrl = sServiceUrl.replace("../", "/");
             sServiceUrl = sServiceUrl.replace("/usage", "");
+            sServiceUrl = sServiceUrl.replace("~/", "~");
             var input = new Input({
               id: "CPUusage",
               value: "0 %",
