@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "cds run",
-    "bind:uaa": "cds bind uaa --to cap-websockets-uaa"
+    "bind:uaa": "cds bind auth --to cap-websockets-uaa"
   },
   "cds": {
     "requires": {
