@@ -25,7 +25,7 @@ Learn more at https://cap.cloud.sap/docs/get-started/.
 After you've deployed the application you can run:
 
 ```bash
-cds bind uaa --to cap-websockets-uaa
+npm run bind:uaa
 ```
 
 to bind the local cap app for hybrid testing. For easy testing you also need to run an approuter. For this you have to store this `default-env.json`in the approuter folder:
