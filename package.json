@@ -23,7 +23,8 @@
   },
   "scripts": {
     "start": "cds run",
-    "bind:uaa": "cds bind auth --to cap-websockets-uaa"
+    "bind:uaa": "cds bind auth --to cap-websockets-uaa",
+    "undeploy": "cf undeploy cap-websockets --delete-service-keys --delete-services --delete-service-brokers"
   },
   "cds": {
     "requires": {
