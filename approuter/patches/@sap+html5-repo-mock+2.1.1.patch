@@ -1,0 +1,63 @@
+diff --git a/node_modules/@sap/html5-repo-mock/lib/utils/proxy.js b/node_modules/@sap/html5-repo-mock/lib/utils/proxy.js
+index 0dd3722..8584600 100644
+--- a/node_modules/@sap/html5-repo-mock/lib/utils/proxy.js
++++ b/node_modules/@sap/html5-repo-mock/lib/utils/proxy.js
+@@ -4,17 +4,11 @@ const console = require('./logger.js');
+ 
+ module.exports = (targetUri, req, res, responsePreprocessor) => {
+     console.debug(
+-        `Forwarding: ${req.method} ${req.url} => ${targetUri}${req.url} `+
+-        `(x-correlationid: ${req.headers['x-correlationid']})`
++        `Forwarding: ${req.method} ${req.url} => ${targetUri}${req.url} `
+     );
+     const uri = new URL(`${targetUri}${req.url}`);
+     const outHeaders = {};
+-    ['Authorization'].forEach(key => {
+-        let value = req.headers[key.toLowerCase()];
+-        if (value) {
+-            outHeaders[key] = value;
+-        }
+-    });
++
+     const outReq = (uri.protocol === 'https:' ? https : http).request({
+         hostname: uri.hostname,
+         port: uri.port,
+@@ -23,8 +17,7 @@ module.exports = (targetUri, req, res, responsePreprocessor) => {
+         headers: outHeaders
+     }, outRes => {
+         console[outRes.statusCode >= 400 ? 'error' : 'debug'](
+-            `Response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `+
+-            `(x-correlationid: ${req.headers['x-correlationid']})`
++            `Response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `
+         );
+         res.statusCode = outRes.statusCode;
+         res.statusMessage = outRes.statusMessage;
+@@ -36,8 +29,7 @@ module.exports = (targetUri, req, res, responsePreprocessor) => {
+         });
+         if (typeof responsePreprocessor === 'function') {
+             console.debug(
+-                `Collecting response body: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `+
+-                `(x-correlationid: ${req.headers['x-correlationid']})`
++                `Collecting response body: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `
+             );
+             let body = Buffer.from('');
+             outRes.on('data', chunk => {
+@@ -45,16 +37,14 @@ module.exports = (targetUri, req, res, responsePreprocessor) => {
+             });
+             outRes.on('end', () => {
+                 console.debug(
+-                    `Preprocessing response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `+
+-                    `(x-correlationid: ${req.headers['x-correlationid']})`
++                    `Preprocessing response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `
+                 );
+                 responsePreprocessor(body.toString('utf-8'), res);
+             });
+             return;
+         }
+         console.debug(
+-            `Piping response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `+
+-            `(x-correlationid: ${req.headers['x-correlationid']})`
++            `Piping response: ${outRes.statusCode} ${req.method} ${req.url} <= ${targetUri}${req.url} `
+         );
+         outRes.pipe(res);
+     });
