@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@sap/cds": "^6",
-    "@sap/xssec": "^3",
     "@sap/xsenv": "^3",
+    "@sap/xssec": "^3",
     "cron": "^2",
     "express": "^4",
     "node-os-utils": "^1",
@@ -19,6 +19,7 @@
     "ws": "^8"
   },
   "devDependencies": {
+    "cds-launchpad-plugin": "^1.0.8",
     "sqlite3": "^5"
   },
   "scripts": {
@@ -33,7 +34,12 @@
   "cds": {
     "requires": {
       "auth": {
-        "kind": "basic-auth"
+        "kind": "basic-auth",
+        "users": {
+          "admin": {
+            "password": ""
+          }
+        }
       },
       "[production]": {
         "auth": {
@@ -42,6 +48,9 @@
       }
     }
   },
+  "sapux": [
+    "app/shellplugin"
+  ],
   "eslintConfig": {
     "extends": "eslint:recommended",
     "env": {
