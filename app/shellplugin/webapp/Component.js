@@ -6,8 +6,9 @@ sap.ui.define(
     "sap/m/Button",
     "sap/m/Label",
     "sap/m/Input",
+    "sap/ui/core/IconPool",
   ],
-  function (UIComponent, Dialog, Text, Button, Label, Input) {
+  function (UIComponent, Dialog, Text, Button, Label, Input, IconPool) {
     "use strict";
 
     return UIComponent.extend("cap.websockets.shellplugin.Component", {
@@ -24,9 +25,13 @@ sap.ui.define(
         var rendererPromise = this._getRenderer();
         rendererPromise.then(
           function (oRenderer) {
+            IconPool.registerFont({
+              fontFamily: "BusinessSuiteInAppSymbols",
+              fontURI: sap.ui.require.toUrl("sap/ushell/themes/base/fonts/"),
+            });
             oRenderer.addHeaderEndItem(
               {
-                icon: "sap-icon://add",
+                icon: "sap-icon://BusinessSuiteInAppSymbols/icon-after-total",
                 tooltip: "Add bookmark",
                 press: function () {
                   var oDialog = new Dialog({

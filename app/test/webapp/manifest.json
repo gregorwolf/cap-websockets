@@ -53,7 +53,7 @@
           "action": "display",
           "title": "{{flpTitle}}",
           "subTitle": "{{flpSubtitle}}",
-          "icon": "sap-icon://split"
+          "icon": "sap-icon://BusinessSuiteInAppSymbols/icon-after-total"
         }
       }
     }
