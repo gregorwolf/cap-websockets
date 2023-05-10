@@ -23,6 +23,10 @@
   },
   "scripts": {
     "start": "cds run",
+    "start:hybrid": "cds watch --profile hybrid",
+    "cs:uaa": "cf create-service xsuaa application cap-websockets-uaa -c xs-security.json",
+    "csk:uaa": "cf create-service-key cap-websockets-uaa cap-websockets-uaa-key",
+    "sk:uaa": "cf service-key cap-websockets-uaa cap-websockets-uaa-key",
     "bind:uaa": "cds bind auth --to cap-websockets-uaa",
     "undeploy": "cf undeploy cap-websockets --delete-service-keys --delete-services --delete-service-brokers"
   },
