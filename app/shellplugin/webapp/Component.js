@@ -87,6 +87,10 @@ sap.ui.define(
       createWebSocketConnection: function (pathname, input) {
         let wsUrl = "";
 
+        if (pathname === "shellplugin/webapp/") {
+          pathname = "";
+        }
+
         // Initiallize the WebSocket connection
         if (document.location.protocol === "https:") {
           wsUrl = "wss://" + document.location.host + pathname + "/ws";
