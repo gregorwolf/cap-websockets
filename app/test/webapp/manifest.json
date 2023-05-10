@@ -27,7 +27,9 @@
         "uri": "usage/",
         "type": "OData",
         "settings": {
-          "annotations": ["annotation"],
+          "annotations": [
+            "annotation"
+          ],
           "localUri": "localService/metadata.xml",
           "odataVersion": "4.0"
         }
@@ -37,6 +39,21 @@
         "uri": "annotations/annotation.xml",
         "settings": {
           "localUri": "annotations/annotation.xml"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "WebSocket-display": {
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "semanticObject": "WebSocket",
+          "action": "display",
+          "title": "{{flpTitle}}",
+          "subTitle": "{{flpSubtitle}}",
+          "icon": "sap-icon://split"
         }
       }
     }
