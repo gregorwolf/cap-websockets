@@ -17,6 +17,13 @@
       "request": "launch",
       "type": "node-terminal",
       "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "command": "cd approuter && npm run start-local",
+      "name": "approuter",
+      "request": "launch",
+      "type": "node-terminal",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
