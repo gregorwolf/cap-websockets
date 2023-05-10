@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "@sap/approuter": "^14"
+    "@sap/approuter": "^14",
+    "patch-package": "^7"
   },
   "devDependencies": {
     "@sap/html5-repo-mock": "^2"
@@ -12,6 +13,7 @@
     "node": "^16"
   },
   "scripts": {
-    "start-local": "export MOCK_DIR=../app && export destinations=`cat default-env.json | jq .destinations` && export VCAP_SERVICES=`cat default-env.json | jq .VCAP_SERVICES` && node node_modules/@sap/html5-repo-mock/index.js --flp --sap-ui-bootstrap-url https://ui5.sap.com --ui5 {\"version\": \"1.108.13\", \"theme\": \"sap_horizon\"}"
+    "start-local": "export MOCK_DIR=../app && export destinations=`cat default-env.json | jq .destinations` && export VCAP_SERVICES=`cat default-env.json | jq .VCAP_SERVICES` && node node_modules/@sap/html5-repo-mock/index.js --flp --sap-ui-bootstrap-url https://ui5.sap.com --ui5 {\"version\": \"1.108.13\", \"theme\": \"sap_horizon\"}",
+    "postinstall": "patch-package"
   }
 }
