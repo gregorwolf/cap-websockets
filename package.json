@@ -9,17 +9,17 @@
     "node": "^16"
   },
   "dependencies": {
-    "@sap/cds": "^6",
-    "@sap/xsenv": "^3",
+    "@sap/cds": "^7",
+    "@sap/xsenv": "^5",
     "@sap/xssec": "^3",
-    "cron": "^2",
+    "cron": "^3",
     "express": "^4",
     "node-os-utils": "^1",
     "passport": "^0",
     "ws": "^8"
   },
   "devDependencies": {
-    "cds-launchpad-plugin": "^1.0.8",
+    "cds-launchpad-plugin": "^2",
     "sqlite3": "^5"
   },
   "scripts": {

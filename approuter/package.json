@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "@sap/approuter": "^14",
-    "patch-package": "^7"
+    "@sap/approuter": "^16",
+    "patch-package": "^8"
   },
   "devDependencies": {
     "@sap/html5-repo-mock": "^2"
