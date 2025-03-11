@@ -9,6 +9,7 @@
     "node": "^20"
   },
   "dependencies": {
+    "@cap-js-community/websocket": "^1.6.1",
     "@sap/cds": "^8",
     "@sap/xsenv": "^5",
     "@sap/xssec": "^4",
