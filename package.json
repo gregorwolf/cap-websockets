@@ -12,7 +12,7 @@
     "@sap/cds": "^8",
     "@sap/xsenv": "^5",
     "@sap/xssec": "^4",
-    "cron": "^3",
+    "cron": "^4",
     "express": "^4",
     "node-os-utils": "^1",
     "passport": "^0",
@@ -32,14 +32,6 @@
   },
   "cds": {
     "requires": {
-      "auth": {
-        "kind": "basic-auth",
-        "users": {
-          "admin": {
-            "password": ""
-          }
-        }
-      },
       "[production]": {
         "auth": {
           "kind": "xsuaa"
