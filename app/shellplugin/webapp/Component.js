@@ -98,9 +98,11 @@ sap.ui.define(
 
         // Initiallize the WebSocket connection
         if (document.location.protocol === "https:") {
-          wsUrl = "wss://" + document.location.host + pathname + "/ws";
+          wsUrl =
+            "wss://" + document.location.host + pathname + "/ws/usage-plugin";
         } else {
-          wsUrl = "ws://" + document.location.host + pathname + "/ws";
+          wsUrl =
+            "ws://" + document.location.host + pathname + "/ws/usage-plugin";
         }
 
         let ws = new WebSocket(wsUrl);
@@ -113,7 +115,7 @@ sap.ui.define(
         // event handler for when an event was received from the server
         ws.onmessage = function (event) {
           console.log("WebSocket message received: " + event.data);
-          let data = JSON.parse(event.data);
+          let { data } = JSON.parse(event.data);
           input.setValue(data.usage + " %");
 
           // update the web page with the received message

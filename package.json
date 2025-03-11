@@ -9,6 +9,7 @@
     "node": "^20"
   },
   "dependencies": {
+    "@cap-js-community/websocket": "^1.6.1",
     "@sap/cds": "^8",
     "@sap/xsenv": "^5",
     "@sap/xssec": "^4",
@@ -23,7 +24,7 @@
     "sqlite3": "^5"
   },
   "scripts": {
-    "start": "cds run",
+    "start": "cds-serve",
     "start:hybrid": "cds watch --profile hybrid",
     "start:hybrid:approuter": "cds bind --exec -- npm run start-local --prefix approuter",
     "cs:uaa": "cf create-service xsuaa application cap-websockets-uaa -c xs-security.json",
