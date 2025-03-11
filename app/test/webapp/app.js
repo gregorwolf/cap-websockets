@@ -15,10 +15,12 @@ function createWebSocketConnection() {
   // Initiallize the WebSocket connection
   if (document.location.protocol === "https:") {
     wsUrl =
-      "wss://" + document.location.host + document.location.pathname + "/ws";
+      "wss://" +
+      document.location.host +
+      document.location.pathname +
+      "/ws/usage-plugin";
   } else {
-    wsUrl =
-      "ws://" + document.location.host + document.location.pathname + "/ws";
+    wsUrl = "ws://" + document.location.host + "/ws/usage-plugin";
   }
 
   let ws = new WebSocket(wsUrl);

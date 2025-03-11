@@ -1,3 +1,6 @@
 ###
-GET http://localhost:4004/usage/cpu
+GET http://localhost:4004/odata/v4/usage-plugin
+Authorization: Basic alice:
 ###
+GET http://localhost:4004/odata/v4/usage-plugin/UsageData
+Authorization: Basic alice:

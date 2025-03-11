@@ -24,12 +24,10 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "usage/",
+        "uri": "odata/v4/usage-plugin/",
         "type": "OData",
         "settings": {
-          "annotations": [
-            "annotation"
-          ],
+          "annotations": ["annotation"],
           "localUri": "localService/metadata.xml",
           "odataVersion": "4.0"
         }
