@@ -25,6 +25,10 @@ annotate service.UsageData with @(
     UI.LineItem                  : [
         {
             $Type: 'UI.DataField',
+            Value: createdAt,
+        },
+        {
+            $Type: 'UI.DataField',
             Label: 'type',
             Value: type,
         },
