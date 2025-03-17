@@ -25,6 +25,7 @@
   },
   "scripts": {
     "start": "cds-serve",
+    "watch": "cds watch",
     "start:hybrid": "cds watch --profile hybrid",
     "start:hybrid:approuter": "cds bind --exec -- npm run start-local --prefix approuter",
     "cs:uaa": "cf create-service xsuaa application cap-websockets-uaa -c xs-security.json",
@@ -69,6 +70,12 @@
     "rules": {
       "no-console": "off",
       "require-atomic-updates": "off"
-    }
+    },
+    "workspaces": [
+      "app/shellplugin",
+      "app/test",
+      "app/usagedata",
+      "approuter"
+    ]
   }
 }
