@@ -1,7 +1,7 @@
 sap.ui.define(
   [
     'sap/ui/core/mvc/ControllerExtension',
-    'ui5-control-tablestatus/TableStatus',
+    'ui5-reuse-tablestatus/TableStatus',
   ],
   function (ControllerExtension, TableStatus) {
     'use strict';
