@@ -14,6 +14,10 @@ service UsagePluginService {
   event cpu {
     usage : Integer;
   }
+  
+  event memory {
+    usage : Integer;
+  }
 
   entity UsageData as projection on db.UsageData;
 }
