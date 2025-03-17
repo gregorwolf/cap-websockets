@@ -19,4 +19,13 @@ module.exports = (srv) => {
     });
     next();
   });
+
+  srv.on("memory", async (req, next) => {
+    LOG.info(`Received memory usage: ${req.data.usage}`);
+    await INSERT.into("UsageData").entries({
+      type: "memory",
+      usage: req.data.usage,
+    });
+    next();
+  });
 };
