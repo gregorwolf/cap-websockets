@@ -23,3 +23,17 @@ Content-Type: application/json
   "type": "memory",
   "usage": 128
 }
+
+###
+POST http://localhost:4004/odata/v4/usage-plugin/SystemStatus
+Authorization: Basic alice:
+Content-Type: application/json
+
+{
+  "category": "cpu",
+  "name": "usage",
+  "value": "19.33",
+  "numericValue": 19.33,
+  "unit": "%",
+  "status": "normal"
+}

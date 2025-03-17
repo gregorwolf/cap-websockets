@@ -19,6 +19,7 @@ service UsagePluginService {
     usage : Integer;
   }
 
+
   event entityUpdated {
     entity : String;
     operation : String;
@@ -29,4 +30,5 @@ service UsagePluginService {
   }
 
   entity UsageData as projection on db.UsageData;
+  entity SystemStatus as projection on db.SystemStatus;
 }
