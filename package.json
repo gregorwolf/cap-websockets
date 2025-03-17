@@ -31,7 +31,8 @@
     "cs:uaa": "cf create-service xsuaa application cap-websockets-uaa -c xs-security.json",
     "bind:uaa": "cds bind auth --to cap-websockets-uaa",
     "undeploy": "cf undeploy cap-websockets --delete-service-keys --delete-services --delete-service-brokers",
-    "watch-usagedata": "cds watch --open usagedata/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-usagedata": "cds watch --open usagedata/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-systemstatus": "cds watch --open systemstatus/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {
@@ -45,7 +46,8 @@
   "sapux": [
     "app/shellplugin",
     "app/test",
-    "app/usagedata"
+    "app/usagedata",
+    "app/systemstatus"
   ],
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -75,6 +77,8 @@
       "app/shellplugin",
       "app/test",
       "app/usagedata",
+      "app/systemstatus",
+      "packages/ui5-control-tablestatus",
       "approuter"
     ]
   }
