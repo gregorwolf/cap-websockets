@@ -17,11 +17,14 @@
     "express": "^4",
     "node-os-utils": "^1",
     "passport": "^0",
-    "ws": "^8"
+    "ws": "^8",
+    "cds-plugin-updatetable": "file:packages/cds-plugin-updatetable"
   },
   "devDependencies": {
     "cds-launchpad-plugin": "^2",
-    "sqlite3": "^5"
+    "sqlite3": "^5",
+    "cds-plugin-ui5": "0.12.0"
+    
   },
   "scripts": {
     "start": "cds-serve",
@@ -49,6 +52,10 @@
     "app/usagedata",
     "app/systemstatus"
   ],
+  "workspaces": [
+    "app/*",
+    "packages/*"
+  ],
   "eslintConfig": {
     "extends": "eslint:recommended",
     "env": {
@@ -72,14 +79,6 @@
     "rules": {
       "no-console": "off",
       "require-atomic-updates": "off"
-    },
-    "workspaces": [
-      "app/shellplugin",
-      "app/test",
-      "app/usagedata",
-      "app/systemstatus",
-      "packages/ui5-reuse-tablestatus",
-      "approuter"
-    ]
+    }
   }
 }
