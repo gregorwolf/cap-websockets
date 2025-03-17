@@ -78,7 +78,7 @@
       "app/test",
       "app/usagedata",
       "app/systemstatus",
-      "packages/ui5-control-tablestatus",
+      "packages/ui5-reuse-tablestatus",
       "approuter"
     ]
   }

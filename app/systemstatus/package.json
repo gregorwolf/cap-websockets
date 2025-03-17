@@ -12,7 +12,7 @@
   "devDependencies": {
     "@ui5/cli": "^3.0.0",
     "@sap/ux-ui5-tooling": "1",
-    "ui5-control-tablestatus": "file:../../packages/ui5-control-tablestatus"
+    "ui5-reuse-tablestatus": "file:../../packages/ui5-reuse-tablestatus"
   },
   "scripts": {
     "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
