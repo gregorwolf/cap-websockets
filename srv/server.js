@@ -7,7 +7,7 @@ var cpu = osu.cpu;
 var mem = osu.mem;
 
 var job = new CronJob(
-  "*/5 * * * * *",
+  "*/10 * * * * *",
   async function () {
     const usagePluginService = await cds.connect.to("UsagePluginService");
     

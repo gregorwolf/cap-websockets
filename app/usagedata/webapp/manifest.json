@@ -114,6 +114,7 @@
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
+              "initialLoad": true,
               "contextPath": "/UsageData",
               "variantManagement": "Page",
               "navigation": {
@@ -142,6 +143,15 @@
               "editableHeaderContent": false,
               "contextPath": "/UsageData"
             }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "cap.websockets.usagedata.ext.controller.ListReport"
           }
         }
       }
