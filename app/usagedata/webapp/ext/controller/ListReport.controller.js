@@ -19,38 +19,34 @@ sap.ui.define(
           onInit: function () {
             // Get the current entity set from the controller
             const entity = this.base.getCurrentEntitySet();
-
-            // Call TableStatus helper instead of creating our own WebSocket
-            TableStatus.createRealTimeIntegration(
+            
+            // Create the table ID
+            const tableId = 'cap.websockets.usagedata::UsageDataList--fe::table::UsageData::LineItem-innerTable';
+            
+            // Create a standard refresh function using the helper
+            const refreshFunction = TableStatus.createTableRefreshFunction(this, tableId);
+            
+            // Call TableStatus helper to setup real-time integration
+            const integration = TableStatus.createRealTimeIntegration(
               this,
               entity,
               '/ws/usage-plugin',
               'cap.websockets.usagedata::UsageDataList--fe::table::UsageData::LineItem-toolbar',
-              this.refreshTable.bind(this) // pass refresh function
+              refreshFunction // pass the created refresh function
             );
+            
+            // Store the cleanup function for onExit
+            this._tableStatusCleanup = integration.cleanup;
           },
 
           // Clean up when controller is destroyed
           onExit: function () {
-            // If TableStatus created a connection, close it here
-            if (this._wsConnection) {
-              this._wsConnection.close();
+            // Use the stored cleanup function
+            if (this._tableStatusCleanup) {
+              this._tableStatusCleanup();
             }
           },
-        },
-
-        // Add a helper method to refresh the table data
-        refreshTable: function () {
-          const table = this.getView().byId(
-            'cap.websockets.usagedata::UsageDataList--fe::table::UsageData::LineItem-innerTable'
-          );
-          if (table) {
-            const binding = table.getBinding('items');
-            if (binding) {
-              binding.refresh();
-            }
-          }
-        },
+        }
       }
     );
   }
