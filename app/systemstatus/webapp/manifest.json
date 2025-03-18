@@ -1,7 +1,7 @@
 {
-  "_version": "1.60.0",
+  "_version": "1.65.0",
   "sap.app": {
-    "id": "cap.websockets.usagedata",
+    "id": "systemstatus",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -12,8 +12,8 @@
     "resources": "resources.json",
     "sourceTemplate": {
       "id": "@sap/generator-fiori:lrop",
-      "version": "1.16.5",
-      "toolsId": "f01a7931-042d-4cba-bd13-1cbe80cf37c1"
+      "version": "1.16.3",
+      "toolsId": "97ca3cdc-931b-4415-a693-f566ff764a15"
     },
     "dataSources": {
       "mainService": {
@@ -22,19 +22,6 @@
         "settings": {
           "annotations": [],
           "odataVersion": "4.0"
-        }
-      }
-    },
-    "crossNavigation": {
-      "inbounds": {
-        "UsageData-display": {
-          "semanticObject": "UsageData",
-          "action": "display",
-          "title": "{{UsageData-display.flpTitle}}",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          }
         }
       }
     }
@@ -73,7 +60,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "cap.websockets.usagedata.i18n.i18n"
+          "bundleName": "systemstatus.i18n.i18n"
         }
       },
       "": {
@@ -98,29 +85,29 @@
       "routes": [
         {
           "pattern": ":?query:",
-          "name": "UsageDataList",
-          "target": "UsageDataList"
+          "name": "SystemStatusList",
+          "target": "SystemStatusList"
         },
         {
-          "pattern": "UsageData({key}):?query:",
-          "name": "UsageDataObjectPage",
-          "target": "UsageDataObjectPage"
+          "pattern": "SystemStatus({key}):?query:",
+          "name": "SystemStatusObjectPage",
+          "target": "SystemStatusObjectPage"
         }
       ],
       "targets": {
-        "UsageDataList": {
+        "SystemStatusList": {
           "type": "Component",
-          "id": "UsageDataList",
+          "id": "SystemStatusList",
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "initialLoad": true,
-              "contextPath": "/UsageData",
+              "contextPath": "/SystemStatus",
               "variantManagement": "Page",
+              "initialLoad": "Enabled",
               "navigation": {
-                "UsageData": {
+                "SystemStatus": {
                   "detail": {
-                    "route": "UsageDataObjectPage"
+                    "route": "SystemStatusObjectPage"
                   }
                 }
               },
@@ -134,14 +121,14 @@
             }
           }
         },
-        "UsageDataObjectPage": {
+        "SystemStatusObjectPage": {
           "type": "Component",
-          "id": "UsageDataObjectPage",
+          "id": "SystemStatusObjectPage",
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "contextPath": "/UsageData"
+              "contextPath": "/SystemStatus"
             }
           }
         }
@@ -151,7 +138,7 @@
       "extensions": {
         "sap.ui.controllerExtensions": {
           "sap.fe.templates.ListReport.ListReportController": {
-            "controllerName": "cap.websockets.usagedata.ext.controller.ListReport"
+            "controllerName": "systemstatus.ext.controller.ListReport"
           }
         }
       }
