@@ -1,9 +1,0 @@
-specVersion: "2.2"
-type: module
-metadata:
-  name: ui5-reuse-tablestatus
-
-resources:
-  configuration:
-    paths:
-      "/thirdparty/tablestatus/": "./" # note the trailing slashes!
