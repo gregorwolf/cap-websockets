@@ -101,7 +101,7 @@ sap.ui.define(
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
           const msgType = message.event; // e.g. "entityUpdated"
-          const msgData = message.data; // { entity, operation, data: {...} }
+          const msgData = message.data; // { entity, operation, data: {...}, keys: {...} }
 
           // Check for 'entityUpdated' event and filter by entity
           if (msgType === 'entityUpdated') {
@@ -110,11 +110,24 @@ sap.ui.define(
               console.log(
                 `Received update for ${entity}: ${msgData.operation}`
               );
+                // For INSERT operations, skip the current view check
+                if (msgData.operation === 'INSERT') {
+                  console.log(`Processing INSERT operation immediately without view check`);
+                  if (typeof updateCallback === 'function') {
+                    updateCallback(true, msgData);
+                  }
+                } else {
+                  // For DELETE operations, check if the record is in current view
+                  const isInCurrentView = controller._isRecordInCurrentView ? 
+                    controller._isRecordInCurrentView(msgData.keys || msgData.data) : true;
 
-              // Call the update callback with the new data
-              if (typeof updateCallback === 'function') {
-                updateCallback(true, msgData);
-              }
+                  console.log(`Is in current view: ${isInCurrentView}`);
+
+                  // Only call the update callback if the record is in the current view
+                  if (isInCurrentView && typeof updateCallback === 'function') {
+                    updateCallback(true, msgData);
+                  }
+                }
             }
           }
         };
@@ -250,6 +263,48 @@ sap.ui.define(
               ? 'sap-icon://message-warning'
               : 'sap-icon://message-success'
           );
+        };
+
+        // Add helper method to the controller to check if a record is in the current view
+        controller._isRecordInCurrentView = (recordData) => {
+          // Default to true if we can't determine the visible records
+          if (!recordData) return true;
+          
+          const tableId = controller._tableId; // This needs to be set in the controller
+          if (!tableId) return true;
+          
+          const table = controller.getView().byId(tableId);
+          if (!table) return true;
+          
+          const binding = table.getBinding('items');
+          if (!binding) return true;
+          
+          const contexts = binding.getCurrentContexts();
+          if (!contexts || contexts.length === 0) return false;
+
+          const currentEntity = controller.base.getCurrentEntitySet();
+          const metaModel = controller.getView().getModel().getMetaModel()
+          const metaModelData = metaModel.getData()
+          const path = binding.getPath();
+          const entityTypeName = metaModel.getObject(path)["$Type"];
+          const keysArray = metaModelData[entityTypeName]["$Key"];
+          // Only remove IsActiveEntity if it exists in the keysArray
+          const isActiveIndex = keysArray.indexOf('IsActiveEntity');
+          if (isActiveIndex !== -1) {
+            keysArray.splice(isActiveIndex, 1);
+          }
+
+          // Check if any of the visible records match the updated record
+          const isInCurrentView = contexts.some(context => {
+            const contextData = context.getObject();
+            // Only compare the keys from keysArray
+            const isMatch = keysArray.some(key => 
+              contextData && recordData && 
+              recordData[key] !== undefined && 
+              contextData[key] === recordData[key]);
+            return isMatch;
+          });
+          return isInCurrentView;
         };
 
         // 4) Return cleanup function for controller to use in onExit

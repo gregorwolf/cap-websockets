@@ -1,5 +1,10 @@
 using UsagePluginService as service from '../../srv/usage-plugin-service';
 annotate service.SystemStatus with @(
+    UI.SelectionFields : [
+        'category',
+        'name',
+        'value'
+    ],
     UI.FieldGroup #GeneratedGroup : {
         $Type : 'UI.FieldGroupType',
         Data : [

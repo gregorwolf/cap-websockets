@@ -10,7 +10,7 @@ var netstat = osu.netstat;
 var drive = osu.drive;
 
 var job = new CronJob(
-  "*/10 * * * * *",
+  "*/5 * * * * *",
   async function () {
     const usagePluginService = await cds.connect.to("UsagePluginService");
     
@@ -24,10 +24,10 @@ var job = new CronJob(
       const memInfo = await mem.info();
       const memUsage = Math.round(memInfo.usedMemPercentage);
       console.log(`The memoryUsage was ${memUsage} %`);
-      usagePluginService.send("memory", { usage: memUsage });
+      // usagePluginService.send("memory", { usage: memUsage });
       
       // NEW: Collect system status metrics
-      const systemStatus = [];
+      const systemStatus = [...initialSystemStatus]; // Include the initial OS metrics
       
       // Add CPU metrics to system status
       systemStatus.push({
@@ -93,25 +93,6 @@ var job = new CronJob(
         value: `${diskInfo.totalGb} GB`,
         numericValue: diskInfo.totalGb,
         unit: 'GB',
-        status: 'normal'
-      });
-      
-      // Add OS info to system status
-      systemStatus.push({
-        category: 'os',
-        name: 'platform',
-        value: os.platform(),
-        numericValue: 0,
-        unit: '',
-        status: 'normal'
-      });
-      
-      systemStatus.push({
-        category: 'os',
-        name: 'uptime',
-        value: formatUptime(os.uptime()),
-        numericValue: os.uptime(),
-        unit: 'seconds',
         status: 'normal'
       });
       
@@ -182,6 +163,35 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+// Initialize OS and uptime info once at server start
+const initialOsInfo = {
+  platform: os.platform(),
+  uptime: formatUptime(os.uptime()),
+  uptimeSeconds: os.uptime()
+};
+
+// Add the initial OS info to system status on server start
+let initialSystemStatus = [];
+
+// Add OS info to system status - these won't be updated in the cron job
+initialSystemStatus.push({
+  category: 'os',
+  name: 'platform',
+  value: initialOsInfo.platform,
+  numericValue: 0,
+  unit: '',
+  status: 'normal'
+});
+
+initialSystemStatus.push({
+  category: 'os',
+  name: 'uptime',
+  value: initialOsInfo.uptime,
+  numericValue: initialOsInfo.uptimeSeconds,
+  unit: 'seconds',
+  status: 'normal'
+});
+
 // react on bootstrapping events...
 cds.on("bootstrap", async (app) => {
   console.log("--> bootstrap");
@@ -189,6 +199,14 @@ cds.on("bootstrap", async (app) => {
 
 cds.on("listening", ({ server }) => {
   job.start();
+  
+  // Send the initial OS metrics when the server starts
+  cds.connect.to("UsagePluginService").then(usagePluginService => {
+    usagePluginService.send("systemStatus", { metrics: initialSystemStatus });
+    console.log("Sent initial OS and uptime information");
+  }).catch(err => {
+    console.error("Error sending initial metrics:", err);
+  });
 });
 
 cds.on("shutdown", () => {

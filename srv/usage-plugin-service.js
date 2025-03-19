@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { INSERT, DELETE } = require("@sap/cds/lib/ql/cds-ql");
+const { INSERT, DELETE, SELECT, UPDATE } = require("@sap/cds/lib/ql/cds-ql");
 const LOG = cds.log("usage-plugin-service");
 
 module.exports = (srv) => {
@@ -18,21 +18,21 @@ module.exports = (srv) => {
     let entityName = "";
 
     if (isInsert) {
-      targetEntity = req.query.INSERT.into.ref[0];
+      targetEntity = req.path;
       // Extract the entity name after the dot
       entityName = targetEntity.split(".").pop();
       LOG.info(
         `INSERT operation on target: ${targetEntity}, entity: ${entityName}`
       );
     } else if (isUpdate) {
-      targetEntity = req.query.UPDATE.entity.ref[0];
+      targetEntity = req.path;
       // Extract the entity name after the dot
       entityName = targetEntity.split(".").pop();
       LOG.info(
         `UPDATE operation on target: ${targetEntity}, entity: ${entityName}`
       );
     } else if (isDelete) {
-      targetEntity = req.query.DELETE.from.ref[0];
+      targetEntity = req.path;
       // Extract the entity name after the dot
       entityName = targetEntity.split(".").pop();
       LOG.info(
@@ -44,11 +44,23 @@ module.exports = (srv) => {
     if (isInsert || isUpdate || isDelete) {
       LOG.info(`Broadcasting update for entity: ${entityName}`);
 
+      // Extract key fields from the data
+      // This is a generic approach to find key fields in the data
+      const keyFields = {};
+      
+      // For SAP CDS entities, key fields are typically available in metadata
+      // But for simplicity, we'll include all fields as potential keys
+      // TODO: Implement a more efficient way to extract key fields from metadata
+      if (req.data) {
+        Object.assign(keyFields, req.data);
+      }
+
       // Send the entityUpdated event with just the entity name (after the dot)
       srv.emit("entityUpdated", {
         entity: entityName,
         operation: isInsert ? "INSERT" : isUpdate ? "UPDATE" : "DELETE",
         data: req.data,
+        keys: keyFields  // Include the key fields
       });
     }
 
@@ -82,42 +94,79 @@ module.exports = (srv) => {
       `Received system status metrics: ${req.data.metrics.length} items`
     );
 
-    // First, delete existing records to keep only the latest data
-    try {
-      await DELETE.from("SystemStatus");
-      LOG.info("Cleared previous system status records");
-    } catch (err) {
-      LOG.error("Error clearing system status records:", err);
-    }
-
-    // Insert all the new metrics
+    // Get service connection
+    const usagePluginService = await cds.connect.to("UsagePluginService");
+    
+    // Process all the metrics
     for (const metric of req.data.metrics) {
       try {
-        const usagePluginService = await cds.connect.to("UsagePluginService");
-        await usagePluginService.run(
-          INSERT.into("SystemStatus").entries({
-            category: metric.category,
-            name: metric.name,
-            value: metric.value,
-            numericValue: metric.numericValue,
-            unit: metric.unit,
-            status: metric.status,
-          })
+        // Special case for OS uptime - only insert once, never update
+        if (metric.category === "os" && metric.name === "uptime") {
+          // Check if it already exists
+          const existingUptime = await usagePluginService.run(
+            SELECT.from("SystemStatus")
+              .where({ category: "os", name: "uptime" })
+          );
+          
+          // Only insert if it doesn't exist yet
+          if (!existingUptime || existingUptime.length === 0) {
+            await usagePluginService.run(
+              INSERT.into("SystemStatus").entries({
+                category: metric.category,
+                name: metric.name,
+                value: metric.value,
+                numericValue: metric.numericValue,
+                unit: metric.unit,
+                status: metric.status,
+              })
+            );
+            LOG.info(`Inserted initial os uptime metric`);
+          } else {
+            LOG.info(`Skipping update for os uptime metric as it's meant to be static`);
+          }
+          continue; // Skip to next metric
+        }
+        
+        // For all other metrics, check if they exist
+        const existingRecord = await usagePluginService.run(
+          SELECT.from("SystemStatus")
+            .where({ category: metric.category, name: metric.name })
         );
+        
+        if (existingRecord && existingRecord.length > 0) {
+          // Update existing record - using ID instead of composite keys
+          await usagePluginService.run(
+            UPDATE("SystemStatus")
+              .set({
+                value: metric.value,
+                numericValue: metric.numericValue,
+                unit: metric.unit,
+                status: metric.status
+              })
+              .where({ ID: existingRecord[0].ID })
+          );
+          LOG.info(`Updated metric ${metric.category}.${metric.name} with ID: ${existingRecord[0].ID}`);
+        } else {
+          // Insert new record if it doesn't exist
+          await usagePluginService.run(
+            INSERT.into("SystemStatus").entries({
+              category: metric.category,
+              name: metric.name,
+              value: metric.value,
+              numericValue: metric.numericValue,
+              unit: metric.unit,
+              status: metric.status,
+            })
+          );
+          LOG.info(`Inserted new metric ${metric.category}.${metric.name}`);
+        }
       } catch (err) {
         LOG.error(
-          `Error inserting metric ${metric.category}.${metric.name}:`,
+          `Error processing metric ${metric.category}.${metric.name}:`,
           err
         );
       }
     }
-
-    // Broadcast that SystemStatus has been updated
-    // srv.emit("entityUpdated", {
-    //   entity: "SystemStatus",
-    //   operation: "UPDATE",
-    //   data: { metrics: req.data.metrics.length }
-    // });
 
     next();
   });

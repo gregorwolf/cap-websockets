@@ -24,6 +24,10 @@ service UsagePluginService {
       type: String;
       usage: Integer;
     };
+    keys: {
+      type: String;
+      usage: Integer;
+    };
   }
 
   entity UsageData as projection on db.UsageData;
