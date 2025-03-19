@@ -30,8 +30,8 @@ Authorization: Basic alice:
 Content-Type: application/json
 
 {
-  "category": "cpu",
-  "name": "usage",
+  "category": "os",
+  "name": "uptime",
   "value": "19.33",
   "numericValue": 19.33,
   "unit": "%",
