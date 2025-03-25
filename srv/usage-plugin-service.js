@@ -21,14 +21,14 @@ module.exports = (srv) => {
       targetEntity = req.path;
       // Extract the entity name after the dot
       entityName = targetEntity.split(".").pop();
-      LOG.info(
+      LOG.debug(
         `INSERT operation on target: ${targetEntity}, entity: ${entityName}`
       );
     } else if (isUpdate) {
       targetEntity = req.path;
       // Extract the entity name after the dot
       entityName = targetEntity.split(".").pop();
-      LOG.info(
+      LOG.debug(
         `UPDATE operation on target: ${targetEntity}, entity: ${entityName}`
       );
     } else if (isDelete) {
@@ -47,7 +47,7 @@ module.exports = (srv) => {
       // Extract key fields from the data
       // This is a generic approach to find key fields in the data
       const keyFields = {};
-      
+
       // For SAP CDS entities, key fields are typically available in metadata
       // But for simplicity, we'll include all fields as potential keys
       // TODO: Implement a more efficient way to extract key fields from metadata
@@ -60,7 +60,7 @@ module.exports = (srv) => {
         entity: entityName,
         operation: isInsert ? "INSERT" : isUpdate ? "UPDATE" : "DELETE",
         data: req.data,
-        keys: keyFields  // Include the key fields
+        keys: keyFields, // Include the key fields
       });
     }
 
@@ -90,13 +90,13 @@ module.exports = (srv) => {
 
   // New handler for systemStatus event from server.js
   srv.on("systemStatus", async (req, next) => {
-    LOG.info(
+    LOG.warn(
       `Received system status metrics: ${req.data.metrics.length} items`
     );
 
     // Get service connection
     const usagePluginService = await cds.connect.to("UsagePluginService");
-    
+
     // Process all the metrics
     for (const metric of req.data.metrics) {
       try {
@@ -104,10 +104,12 @@ module.exports = (srv) => {
         if (metric.category === "os" && metric.name === "uptime") {
           // Check if it already exists
           const existingUptime = await usagePluginService.run(
-            SELECT.from("SystemStatus")
-              .where({ category: "os", name: "uptime" })
+            SELECT.from("SystemStatus").where({
+              category: "os",
+              name: "uptime",
+            })
           );
-          
+
           // Only insert if it doesn't exist yet
           if (!existingUptime || existingUptime.length === 0) {
             await usagePluginService.run(
@@ -120,19 +122,23 @@ module.exports = (srv) => {
                 status: metric.status,
               })
             );
-            LOG.info(`Inserted initial os uptime metric`);
+            LOG.debug(`Inserted initial os uptime metric`);
           } else {
-            LOG.info(`Skipping update for os uptime metric as it's meant to be static`);
+            LOG.debug(
+              `Skipping update for os uptime metric as it's meant to be static`
+            );
           }
           continue; // Skip to next metric
         }
-        
+
         // For all other metrics, check if they exist
         const existingRecord = await usagePluginService.run(
-          SELECT.from("SystemStatus")
-            .where({ category: metric.category, name: metric.name })
+          SELECT.from("SystemStatus").where({
+            category: metric.category,
+            name: metric.name,
+          })
         );
-        
+
         if (existingRecord && existingRecord.length > 0) {
           // Update existing record - using ID instead of composite keys
           await usagePluginService.run(
@@ -141,11 +147,13 @@ module.exports = (srv) => {
                 value: metric.value,
                 numericValue: metric.numericValue,
                 unit: metric.unit,
-                status: metric.status
+                status: metric.status,
               })
               .where({ ID: existingRecord[0].ID })
           );
-          LOG.info(`Updated metric ${metric.category}.${metric.name} with ID: ${existingRecord[0].ID}`);
+          LOG.debug(
+            `Updated metric ${metric.category}.${metric.name} with ID: ${existingRecord[0].ID}`
+          );
         } else {
           // Insert new record if it doesn't exist
           await usagePluginService.run(
@@ -158,7 +166,7 @@ module.exports = (srv) => {
               status: metric.status,
             })
           );
-          LOG.info(`Inserted new metric ${metric.category}.${metric.name}`);
+          LOG.debug(`Inserted new metric ${metric.category}.${metric.name}`);
         }
       } catch (err) {
         LOG.error(
