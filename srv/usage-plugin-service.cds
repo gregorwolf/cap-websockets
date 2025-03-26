@@ -1,6 +1,5 @@
 using {db} from '../db/schema';
 
-
 @(requires: [
   'authenticated-user',
   'internal-user'
@@ -9,16 +8,6 @@ using {db} from '../db/schema';
   'websocket',
   'odata'
 ]
-
-type metric : {
-  category     : db.SystemStatus:category;
-  name         : db.SystemStatus:name;
-  value        : db.SystemStatus:value;
-  numericValue : db.SystemStatus:numericValue;
-  unit         : db.SystemStatus:unit;
-  status       : db.SystemStatus:status
-};
-
 service UsagePluginService {
   event cpu {
     usage : Integer;
@@ -27,9 +16,8 @@ service UsagePluginService {
   event memory {
     usage : Integer;
   }
-
   event systemStatus {
-    metrics : array of metric;
+    metrics : array of db.metric;
   }
 
   event entityUpdated {
