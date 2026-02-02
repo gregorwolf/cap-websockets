@@ -15,7 +15,7 @@
     "@sap/xssec": "^4",
     "cron": "^4",
     "express": "^4",
-    "node-os-utils": "^1",
+    "node-os-utils": "^2",
     "passport": "^0",
     "ws": "^8"
   },
