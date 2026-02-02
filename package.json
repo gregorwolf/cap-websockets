@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "engines": {
-    "node": "^20"
+    "node": "^22"
   },
   "dependencies": {
     "@cap-js-community/websocket": "^1.6.1",
