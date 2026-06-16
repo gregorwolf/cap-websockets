@@ -1,10 +1,10 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-<!-- Copyright (c) 2015 SAP AG, All Rights Reserved -->
-<head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Copyright (c) 2015 SAP AG, All Rights Reserved -->
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{appTitle}}</title>
 
     <!-- Bootstrap the unified shell in sandbox mode for standalone usage.
@@ -23,62 +23,64 @@
          for productive scenarios.
     -->
     <script type="text/javascript">
-        window["sap-ushell-config"] = {
-            defaultRenderer: "fiori2",
-            bootstrapPlugins: {
-                "RuntimeAuthoringPlugin": {
-                    component: "sap.ushell.plugins.rta",
-                    config: {
-                        validateAppVersion: false
-                    }
-                }
+      window["sap-ushell-config"] = {
+        defaultRenderer: "fiori2",
+        bootstrapPlugins: {
+          RuntimeAuthoringPlugin: {
+            component: "sap.ushell.plugins.rta",
+            config: {
+              validateAppVersion: false,
             },
-            renderers: {
-                fiori2: {
-                    componentData: {
-                        config: {
-                            search: "hidden",
-                            enableSearch: false
-                        }
-                    }
-                }
+          },
+        },
+        renderers: {
+          fiori2: {
+            componentData: {
+              config: {
+                search: "hidden",
+                enableSearch: false,
+              },
             },
-            applications: {
-                "capwebsocketsusagedata-tile": {
-                    title: "Usage Data",
-                    description: "Usage Data",
-                    additionalInformation: "SAPUI5.Component=cap.websockets.usagedata",
-                    applicationType: "URL",
-                    url: "../"
-                }
-            }
-        };
+          },
+        },
+        applications: {
+          "capwebsocketsusagedata-tile": {
+            title: "Usage Data",
+            description: "Usage Data",
+            additionalInformation: "SAPUI5.Component=cap.websockets.usagedata",
+            applicationType: "URL",
+            url: "../",
+          },
+        },
+      };
     </script>
 
-    <script src="https://sapui5.hana.ondemand.com/1.120.20/test-resources/sap/ushell/bootstrap/sandbox.js" id="sap-ushell-bootstrap"></script>
+    <script
+      src="https://sapui5.hana.ondemand.com/1.142.13/test-resources/sap/ushell/bootstrap/sandbox.js"
+      id="sap-ushell-bootstrap"
+    ></script>
     <!-- Bootstrap the UI5 core library. 'data-sap-ui-frameOptions="allow"'' is a NON-SECURE setting for test environments -->
-    <script id="sap-ui-bootstrap"
-        src="https://sapui5.hana.ondemand.com/1.120.20/resources/sap-ui-core.js"
-        data-sap-ui-libs=""
-        data-sap-ui-async="true"
-        data-sap-ui-preload="async"
-        data-sap-ui-theme="sap_horizon"
-        data-sap-ui-compatVersion="edge"
-        data-sap-ui-language="en"
-        data-sap-ui-resourceroots='{"cap.websockets.usagedata": "../"}'
-        data-sap-ui-frameOptions="allow"
-        data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'>
-    </script>
+    <script
+      id="sap-ui-bootstrap"
+      src="https://sapui5.hana.ondemand.com/1.142.13/resources/sap-ui-core.js"
+      data-sap-ui-libs=""
+      data-sap-ui-async="true"
+      data-sap-ui-preload="async"
+      data-sap-ui-theme="sap_horizon"
+      data-sap-ui-compatVersion="edge"
+      data-sap-ui-language="en"
+      data-sap-ui-resourceroots='{"cap.websockets.usagedata": "../"}'
+      data-sap-ui-frameOptions="allow"
+      data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'
+    ></script>
     <script>
-        sap.ui.getCore().attachInit(function () {
-            sap.ushell.Container.createRenderer().placeAt("content");
-        });
+      sap.ui.getCore().attachInit(function () {
+        sap.ushell.Container.createRenderer().placeAt("content");
+      });
     </script>
-</head>
+  </head>
 
-<!-- UI Content -->
+  <!-- UI Content -->
 
-<body class="sapUiBody" id="content">
-</body>
-
+  <body class="sapUiBody" id="content"></body>
 </html>

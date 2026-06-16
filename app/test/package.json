@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@sap/ui5-builder-webide-extension": "^1",
-    "ui5-task-zipper": "^0",
+    "ui5-task-zipper": "^3",
     "mbt": "^1"
   },
   "ui5": {

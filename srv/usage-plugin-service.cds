@@ -1,7 +1,10 @@
 using {db} from '../db/schema';
 
 
-@(requires: 'authenticated-user')
+@(requires: [
+  'authenticated-user',
+  'internal-user'
+])
 @protocol: [
   'websocket',
   'odata'

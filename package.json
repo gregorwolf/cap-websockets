@@ -6,22 +6,22 @@
   "license": "UNLICENSED",
   "private": true,
   "engines": {
-    "node": "^20"
+    "node": "^22"
   },
   "dependencies": {
-    "@cap-js-community/websocket": "^1.6.1",
-    "@sap/cds": "^8",
-    "@sap/xsenv": "^5",
+    "@cap-js-community/websocket": "^1.10.5",
+    "@sap/cds": "^9",
+    "@sap/xsenv": "^6",
     "@sap/xssec": "^4",
     "cron": "^4",
-    "express": "^4",
-    "node-os-utils": "^1",
-    "passport": "^0",
-    "ws": "^8"
+    "express": "^4.22.2",
+    "node-os-utils": "^2",
+    "passport": "^0.7.0",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
-    "cds-launchpad-plugin": "^2",
-    "sqlite3": "^5"
+    "@cap-js/sqlite": "^2.4.0",
+    "cds-launchpad-plugin": "^2"
   },
   "scripts": {
     "start": "cds-serve",

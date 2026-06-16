@@ -2,20 +2,22 @@
 const cds = require("@sap/cds");
 var CronJob = require("cron").CronJob;
 
-var osu = require("node-os-utils");
-var cpu = osu.cpu;
+var { OSUtils } = require("node-os-utils");
+
+const osutils = new OSUtils();
 
 var job = new CronJob(
   "*/5 * * * * *",
   async function () {
     const usagePluginService = await cds.connect.to("UsagePluginService");
-    const cpuUsage = await cpu.usage(100);
-    console.log(`The cpuUsage was ${cpuUsage} %`);
+    const cpuUsageObject = await osutils.cpu.usage();
+    const cpuUsage = parseInt(cpuUsageObject.data);
+    console.log(`The CPU Usage was ${cpuUsage} %`);
     usagePluginService.send("cpu", { usage: cpuUsage });
   },
   null,
   false,
-  "Europe/Berlin"
+  "Europe/Berlin",
 );
 // react on bootstrapping events...
 cds.on("bootstrap", async (app) => {
