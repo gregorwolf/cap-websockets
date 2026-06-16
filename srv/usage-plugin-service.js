@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { INSERT, DELETE, SELECT, UPDATE } = require("@sap/cds/lib/ql/cds-ql");
+const { INSERT, SELECT, UPDATE } = cds.ql;
 const LOG = cds.log("usage-plugin-service");
 
 module.exports = (srv) => {
@@ -40,7 +40,9 @@ module.exports = (srv) => {
       );
     }
 
-    // Broadcast entity update event
+    const result = await next();
+
+    // Broadcast entity update event after the database operation succeeded.
     if (isInsert || isUpdate || isDelete) {
       LOG.info(`Broadcasting update for entity: ${entityName}`);
 
@@ -64,7 +66,7 @@ module.exports = (srv) => {
       });
     }
 
-    next();
+    return result;
   });
 
   srv.on("cpu", async (req, next) => {
@@ -76,7 +78,7 @@ module.exports = (srv) => {
         usage: req.data.usage,
       })
     );
-    next();
+    return next();
   });
 
   srv.on("memory", async (req, next) => {
@@ -85,7 +87,7 @@ module.exports = (srv) => {
       type: "memory",
       usage: req.data.usage,
     });
-    next();
+    return next();
   });
 
   // New handler for systemStatus event from server.js
@@ -176,6 +178,6 @@ module.exports = (srv) => {
       }
     }
 
-    next();
+    return next();
   });
 };
