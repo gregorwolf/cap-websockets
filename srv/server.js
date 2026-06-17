@@ -1,13 +1,11 @@
 /* eslint-disable no-console */
 const cds = require("@sap/cds");
+const nodeOs = require("os");
 var CronJob = require("cron").CronJob;
 
-var osu = require("node-os-utils");
-var cpu = osu.cpu;
-var mem = osu.mem;
-var os = osu.os;
-var netstat = osu.netstat;
-var drive = osu.drive;
+var { OSUtils } = require("node-os-utils");
+
+const osutils = new OSUtils();
 
 var job = new CronJob(
   "*/60 * * * * *",
@@ -16,13 +14,15 @@ var job = new CronJob(
 
     try {
       // Get CPU usage
-      const cpuUsage = await cpu.usage(100);
+      const cpuUsage = toFixedNumber(
+        await readMetricResult(osutils.cpu.usage(), "cpu usage")
+      );
       console.log(`The cpuUsage was ${cpuUsage} %`);
       usagePluginService.send("cpu", { usage: cpuUsage });
 
       // Get memory usage
-      const memInfo = await mem.info();
-      const memUsage = Math.round(memInfo.usedMemPercentage);
+      const memInfo = await readMetricResult(osutils.memory.info(), "memory info");
+      const memUsage = Math.round(memInfo.usagePercentage);
       console.log(`The memoryUsage was ${memUsage} %`);
       // usagePluginService.send("memory", { usage: memUsage });
 
@@ -49,11 +49,14 @@ var job = new CronJob(
         status: memUsage > 80 ? 'critical' : memUsage > 60 ? 'warning' : 'normal'
       });
 
+      const freeMemMb = toUnit(bytesFromDataSize(memInfo.available), "MB");
+      const totalMemMb = toUnit(bytesFromDataSize(memInfo.total), "MB");
+
       systemStatus.push({
         category: 'memory',
         name: 'free',
-        value: `${memInfo.freeMemMb} MB`,
-        numericValue: memInfo.freeMemMb,
+        value: `${freeMemMb} MB`,
+        numericValue: freeMemMb,
         unit: 'MB',
         status: 'normal'
       });
@@ -61,28 +64,32 @@ var job = new CronJob(
       systemStatus.push({
         category: 'memory',
         name: 'total',
-        value: `${memInfo.totalMemMb} MB`,
-        numericValue: memInfo.totalMemMb,
+        value: `${totalMemMb} MB`,
+        numericValue: totalMemMb,
         unit: 'MB',
         status: 'normal'
       });
 
       // Add disk metrics to system status
-      const diskInfo = await drive.info();
+      const diskInfo = await readMetricResult(osutils.disk.spaceOverview(), "disk overview");
+      const diskUsage = toFixedNumber(diskInfo.usagePercentage);
+      const freeDiskGb = toUnit(bytesFromDataSize(diskInfo.available), "GB");
+      const totalDiskGb = toUnit(bytesFromDataSize(diskInfo.total), "GB");
+
       systemStatus.push({
         category: 'disk',
         name: 'usage',
-        value: `${diskInfo.usedPercentage}%`,
-        numericValue: diskInfo.usedPercentage,
+        value: `${diskUsage}%`,
+        numericValue: diskUsage,
         unit: '%',
-        status: diskInfo.usedPercentage > 90 ? 'critical' : diskInfo.usedPercentage > 75 ? 'warning' : 'normal'
+        status: diskUsage > 90 ? 'critical' : diskUsage > 75 ? 'warning' : 'normal'
       });
 
       systemStatus.push({
         category: 'disk',
         name: 'free',
-        value: `${diskInfo.freeGb} GB`,
-        numericValue: diskInfo.freeGb,
+        value: `${freeDiskGb} GB`,
+        numericValue: freeDiskGb,
         unit: 'GB',
         status: 'normal'
       });
@@ -90,35 +97,35 @@ var job = new CronJob(
       systemStatus.push({
         category: 'disk',
         name: 'total',
-        value: `${diskInfo.totalGb} GB`,
-        numericValue: diskInfo.totalGb,
+        value: `${totalDiskGb} GB`,
+        numericValue: totalDiskGb,
         unit: 'GB',
         status: 'normal'
       });
 
       // Add network info
       try {
-        const networkStats = await netstat.stats();
-        const inputData = networkStats.find(stat => stat.inputBytes);
-        const outputData = networkStats.find(stat => stat.outputBytes);
+        const networkOverview = await readMetricResult(osutils.network.overview(), "network overview");
+        const inputBytes = bytesFromDataSize(networkOverview.totalRxBytes);
+        const outputBytes = bytesFromDataSize(networkOverview.totalTxBytes);
 
-        if (inputData) {
+        if (inputBytes) {
           systemStatus.push({
             category: 'network',
             name: 'input',
-            value: `${formatBytes(inputData.inputBytes)}`,
-            numericValue: inputData.inputBytes,
+            value: `${formatBytes(inputBytes)}`,
+            numericValue: inputBytes,
             unit: 'B',
             status: 'normal'
           });
         }
 
-        if (outputData) {
+        if (outputBytes) {
           systemStatus.push({
             category: 'network',
             name: 'output',
-            value: `${formatBytes(outputData.outputBytes)}`,
-            numericValue: outputData.outputBytes,
+            value: `${formatBytes(outputBytes)}`,
+            numericValue: outputBytes,
             unit: 'B',
             status: 'normal'
           });
@@ -139,6 +146,30 @@ var job = new CronJob(
   false,
   "Europe/Berlin",
 );
+
+async function readMetricResult(metricPromise, label) {
+  const result = await metricPromise;
+  if (!result?.success) {
+    throw new Error(`Unable to read ${label}`);
+  }
+  return result.data;
+}
+
+function bytesFromDataSize(value) {
+  if (!value) return 0;
+  if (typeof value.toBytes === "function") return value.toBytes();
+  if (typeof value.bytes === "number") return value.bytes;
+  return Number(value) || 0;
+}
+
+function toUnit(bytes, unit) {
+  const divisor = unit === "GB" ? 1024 ** 3 : 1024 ** 2;
+  return toFixedNumber(bytes / divisor);
+}
+
+function toFixedNumber(value, decimals = 2) {
+  return Number(Number(value).toFixed(decimals));
+}
 
 // Helper function to format uptime
 function formatUptime(seconds) {
@@ -165,9 +196,9 @@ function formatBytes(bytes, decimals = 2) {
 
 // Initialize OS and uptime info once at server start
 const initialOsInfo = {
-  platform: os.platform(),
-  uptime: formatUptime(os.uptime()),
-  uptimeSeconds: os.uptime()
+  platform: nodeOs.platform(),
+  uptime: formatUptime(nodeOs.uptime()),
+  uptimeSeconds: nodeOs.uptime()
 };
 
 // Add the initial OS info to system status on server start
