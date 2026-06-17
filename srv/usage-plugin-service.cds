@@ -1,6 +1,5 @@
 using {db} from '../db/schema';
 
-
 @(requires: [
   'authenticated-user',
   'internal-user'
@@ -9,11 +8,31 @@ using {db} from '../db/schema';
   'websocket',
   'odata'
 ]
-
 service UsagePluginService {
   event cpu {
     usage : Integer;
   }
 
-  entity UsageData as projection on db.UsageData;
+  event memory {
+    usage : Integer;
+  }
+  event systemStatus {
+    metrics : array of db.metric;
+  }
+
+  event entityUpdated {
+    entity    : String;
+    operation : String;
+    data      : {
+      type    : String;
+      usage   : Integer;
+    };
+    keys      : {
+      type    : String;
+      usage   : Integer;
+    };
+  }
+
+  entity UsageData    as projection on db.UsageData;
+  entity SystemStatus as projection on db.SystemStatus;
 }

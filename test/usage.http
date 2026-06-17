@@ -23,3 +23,17 @@ Content-Type: application/json
   "type": "memory",
   "usage": 128
 }
+
+###
+POST http://localhost:4004/odata/v4/usage-plugin/SystemStatus
+Authorization: Basic alice:
+Content-Type: application/json
+
+{
+  "category": "os",
+  "name": "uptime",
+  "value": "294919",
+  "numericValue": 294919,
+  "unit": "seconds",
+  "status": "normal"
+}

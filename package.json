@@ -25,12 +25,14 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "start:hybrid": "cds watch --profile hybrid",
+    "watch": "cds watch --port 4016",
+    "start:hybrid": "cds watch --profile hybrid --port 4016",
     "start:hybrid:approuter": "cds bind --exec -- npm run start-local --prefix approuter",
     "cs:uaa": "cf create-service xsuaa application cap-websockets-uaa -c xs-security.json",
     "bind:uaa": "cds bind auth --to cap-websockets-uaa",
     "undeploy": "cf undeploy cap-websockets --delete-service-keys --delete-services --delete-service-brokers",
-    "watch-usagedata": "cds watch --open usagedata/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-usagedata": "cds watch --open usagedata/webapp/index.html?sap-ui-xx-viewCache=false --port 4016",
+    "watch-systemstatus": "cds watch --open systemstatus/webapp/index.html?sap-ui-xx-viewCache=false --port 4016"
   },
   "cds": {
     "requires": {
@@ -44,7 +46,11 @@
   "sapux": [
     "app/shellplugin",
     "app/test",
-    "app/usagedata"
+    "app/usagedata",
+    "app/systemstatus"
+  ],
+  "workspaces": [
+    "app/*"
   ],
   "eslintConfig": {
     "extends": "eslint:recommended",
